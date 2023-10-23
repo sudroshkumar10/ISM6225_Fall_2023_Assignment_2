@@ -112,15 +112,51 @@ namespace ISM6225_Fall_2023_Assignment_2
         {
             try
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return new List<IList<int>>();
+                // Initialize a list to store the missing ranges
+                List<IList<int>> missingRanges = new List<IList<int>>();
+
+                // Helper function to add a range to the result
+                void AddRange(int start, int end)
+                {
+                    if (start == end)
+                    {
+                        missingRanges.Add(new List<int> { start });
+                    }
+                    else
+                    {
+                        missingRanges.Add(new List<int> { start, end });
+                    }
+                }
+
+                // Handle the case where lower is greater than the first element in nums
+                if (nums.Length > 0 && lower < nums[0])
+                {
+                    AddRange(lower, nums[0] - 1);
+                }
+
+                // Check for missing ranges between elements in nums
+                for (int i = 1; i < nums.Length; i++)
+                {
+                    if (nums[i] - nums[i - 1] > 1)
+                    {
+                        AddRange(nums[i - 1] + 1, nums[i] - 1);
+                    }
+                }
+
+                // Handle the case where upper is smaller than the last element in nums
+                if (nums.Length > 0 && upper > nums[nums.Length - 1])
+                {
+                    AddRange(nums[nums.Length - 1] + 1, upper);
+                }
+
+                return missingRanges;
             }
             catch (Exception)
             {
                 throw;
             }
-
         }
+
 
         /*
          
@@ -152,18 +188,45 @@ namespace ISM6225_Fall_2023_Assignment_2
         Time complexity:O(n^2), space complexity:O(1)
         */
 
+        // This function checks if a given input string 's' contains valid parentheses.
+
         public static bool IsValid(string s)
         {
-            try
+            // Create a stack to hold open brackets.
+            Stack<char> stack = new Stack<char>();
+
+            // Iterate through each character in the input string.
+            foreach (char c in s)
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return s.Length == 0;
+                // If the character is an open bracket, push it onto the stack.
+                if (c == '(' || c == '{' || c == '[')
+                {
+                    stack.Push(c);
+                }
+                // If the character is a closing bracket...
+                else if (c == ')' && (stack.Count == 0 || stack.Pop() != '('))
+                {
+                    // Check if it matches with an open bracket on the stack. If not, return false.
+                    return false;
+                }
+                else if (c == '}' && (stack.Count == 0 || stack.Pop() != '{'))
+                {
+                    // Check if it matches with an open bracket on the stack. If not, return false.
+                    return false;
+                }
+                else if (c == ']' && (stack.Count == 0 || stack.Pop() != '['))
+                {
+                    // Check if it matches with an open bracket on the stack. If not, return false.
+                    return false;
+                }
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            // After processing all characters, check if there are any unmatched open brackets left on the stack.
+            return stack.Count == 0;
         }
+
+
+
 
         /*
 
@@ -187,18 +250,46 @@ namespace ISM6225_Fall_2023_Assignment_2
         Time complexity: O(n), space complexity:O(1)
         */
 
+        // This function calculates the maximum profit that can be achieved by buying and selling a stock.
+
         public static int MaxProfit(int[] prices)
         {
             try
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return 1;
+                // Check if the input prices array is null or has less than 2 elements.
+                if (prices == null || prices.Length < 2)
+                {
+                    return 0; // Cannot make a profit with less than two prices.
+                }
+
+                // Initialize variables to track the maximum profit and the minimum price.
+                int maxProfit = 0;
+                int minPrice = prices[0];
+
+                // Iterate through the prices starting from the second day.
+                for (int i = 1; i < prices.Length; i++)
+                {
+                    // If the current price is lower than the minimum price seen so far, update the minimum price.
+                    if (prices[i] < minPrice)
+                    {
+                        minPrice = prices[i];
+                    }
+                    // If the current price is higher, calculate the profit from buying at the minimum price and selling at the current price.
+                    else
+                    {
+                        int currentProfit = prices[i] - minPrice;
+                        maxProfit = Math.Max(maxProfit, currentProfit); // Update the maximum profit if the current profit is higher.
+                    }
+                }
+
+                return maxProfit; // Return the maximum profit achieved.
             }
             catch (Exception)
             {
                 throw;
             }
         }
+
 
         /*
         
@@ -225,18 +316,49 @@ namespace ISM6225_Fall_2023_Assignment_2
         Time complexity:O(n), space complexity:O(1)
         */
 
-        public static bool IsStrobogrammatic(string s)
+        // This function checks if a given string is strobogrammatic, which means it reads the same when rotated 180 degrees.
+        public static bool IsStrobogrammatic(string num)
         {
             try
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return false;
+                // Initialize two pointers, 'left' and 'right,' to check the string from the outer edges towards the center.
+                int left = 0;
+                int right = num.Length - 1;
+
+                // Continue checking pairs of characters until the 'left' pointer is less than or equal to the 'right' pointer.
+                while (left <= right)
+                {
+                    // Check if the pair of characters at the 'left' and 'right' positions is strobogrammatic.
+                    if (!IsStrobogrammaticPair(num[left], num[right]))
+                    {
+                        return false; // If the pair is not strobogrammatic, return false.
+                    }
+
+                    left++;
+                    right--;
+                }
+
+                return true; // If all pairs are strobogrammatic, return true, indicating that the input string is strobogrammatic.
             }
             catch (Exception)
             {
                 throw;
             }
         }
+
+        // This helper function checks if a pair of characters is strobogrammatic.
+        private static bool IsStrobogrammaticPair(char a, char b)
+        {
+            // A pair is strobogrammatic if it consists of the following character combinations:
+            // '0' and '0', '1' and '1', '6' and '9', '8' and '8', '9' and '6'.
+            return (a == '0' && b == '0') ||
+                   (a == '1' && b == '1') ||
+                   (a == '6' && b == '9') ||
+                   (a == '8' && b == '8') ||
+                   (a == '9' && b == '6');
+        }
+
+
 
         /*
 
@@ -267,18 +389,41 @@ namespace ISM6225_Fall_2023_Assignment_2
 
         */
 
+        // This function counts the number of good pairs in the given array 'nums.'
         public static int NumIdenticalPairs(int[] nums)
         {
             try
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return 0;
+                int count = 0; // Initialize a count to keep track of the good pairs.
+                Dictionary<int, int> frequencyMap = new Dictionary<int, int>();
+
+                // Iterate through the elements of the 'nums' array.
+                foreach (int num in nums)
+                {
+                    // If the 'frequencyMap' contains the current number, it means we've seen it before.
+                    if (frequencyMap.ContainsKey(num))
+                    {
+                        // Increase the 'count' by the frequency of the current number in the 'frequencyMap.'
+                        count += frequencyMap[num];
+
+                        // Increment the frequency of the current number in the 'frequencyMap.'
+                        frequencyMap[num]++;
+                    }
+                    else
+                    {
+                        // If the current number is not in the 'frequencyMap,' add it with a frequency of 1.
+                        frequencyMap[num] = 1;
+                    }
+                }
+
+                return count; // Return the total count of good pairs.
             }
             catch (Exception)
             {
                 throw;
             }
         }
+
 
         /*
         Question 6
@@ -317,18 +462,50 @@ namespace ISM6225_Fall_2023_Assignment_2
         Time complexity:O(nlogn), space complexity:O(n)
         */
 
+        // This function finds the third distinct maximum number in the 'nums' array.
+        // If the third maximum does not exist, it returns the maximum number.
         public static int ThirdMax(int[] nums)
         {
             try
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return 0;
+                long firstMax = long.MinValue;
+                long secondMax = long.MinValue;
+                long thirdMax = long.MinValue;
+
+                // Iterate through the elements in the 'nums' array.
+                foreach (int num in nums)
+                {
+                    // Check if the current number is greater than the first maximum.
+                    if (num > firstMax)
+                    {
+                        // Update the third, second, and first maximum values.
+                        thirdMax = secondMax;
+                        secondMax = firstMax;
+                        firstMax = num;
+                    }
+                    // If the current number is between the first and second maximum, update the third and second maximum values.
+                    else if (num < firstMax && num > secondMax)
+                    {
+                        thirdMax = secondMax;
+                        secondMax = num;
+                    }
+                    // If the current number is between the second and third maximum, update the third maximum.
+                    else if (num < secondMax && num > thirdMax)
+                    {
+                        thirdMax = num;
+                    }
+                }
+
+                // Return the third maximum if it's not equal to the minimum value, otherwise, return the first maximum.
+                return thirdMax != long.MinValue ? (int)thirdMax : (int)firstMax;
             }
             catch (Exception)
             {
                 throw;
             }
         }
+
+
 
         /*
         
@@ -350,18 +527,40 @@ namespace ISM6225_Fall_2023_Assignment_2
         Timecomplexity:O(n), Space complexity:O(n)
         */
 
+        // This function generates all possible states of the 'currentState' string after one valid move.
+        // A valid move involves flipping two consecutive "++" into "--" in the string.
         public static IList<string> GeneratePossibleNextMoves(string currentState)
         {
             try
             {
-                // Write your code here and you can modify the return value according to the requirements
-                return new List<string>() { };
+                List<string> result = new List<string>();
+
+                // Iterate through the characters in the 'currentState' string, except the last character.
+                for (int i = 0; i < currentState.Length - 1; i++)
+                {
+                    // Check if the current character and the next character are both '+' (consecutive "++").
+                    if (currentState[i] == '+' && currentState[i + 1] == '+')
+                    {
+                        // Create a new character array to represent the updated state.
+                        char[] newState = currentState.ToCharArray();
+
+                        // Flip the consecutive "++" to "--" in the new state.
+                        newState[i] = '-';
+                        newState[i + 1] = '-';
+
+                        // Add the new state to the result list as a valid move.
+                        result.Add(new string(newState));
+                    }
+                }
+
+                return result;
             }
             catch (Exception)
             {
                 throw;
             }
         }
+
 
         /*
 
@@ -381,11 +580,29 @@ namespace ISM6225_Fall_2023_Assignment_2
         Timecomplexity:O(n), Space complexity:O(n)
         */
 
+        // This function removes vowels ('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U') from the input string.
         public static string RemoveVowels(string s)
         {
-            // Write your code here and you can modify the return value according to the requirements
-            return "";
+            // Create a StringBuilder to build the result string efficiently.
+            StringBuilder result = new StringBuilder();
+
+            // Iterate through each character in the input string.
+            foreach (char c in s)
+            {
+                // Check if the current character is not a vowel by comparing it to a list of vowel characters.
+                if (c != 'a' && c != 'e' && c != 'i' && c != 'o' && c != 'u' &&
+                    c != 'A' && c != 'E' && c != 'I' && c != 'O' && c != 'U')
+                {
+                    // If the character is not a vowel, add it to the result.
+                    result.Append(c);
+                }
+            }
+
+            // Convert the StringBuilder to a string and return the result with vowels removed.
+            return result.ToString();
         }
+
+
 
         /* Inbuilt Functions - Don't Change the below functions */
         static string ConvertIListToNestedList(IList<IList<int>> input)
